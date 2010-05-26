@@ -14,7 +14,7 @@
 	
 	<servlet-mapping>
 		<servlet-name>fits.FitsService</servlet-name>
-		<url-pattern>/FitsService/*</url-pattern>
+		<url-pattern>/examine/*</url-pattern>
 	</servlet-mapping>
 	
 	

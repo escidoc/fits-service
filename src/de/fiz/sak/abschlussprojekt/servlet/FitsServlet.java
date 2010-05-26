@@ -1,7 +1,6 @@
 package de.fiz.sak.abschlussprojekt.servlet;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,6 +9,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.zip.Adler32;
+import java.util.zip.Checksum;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -42,7 +44,7 @@ public class FitsServlet extends HttpServlet {
         throws ServletException, IOException {
 
         String path = req.getParameter("path");
-        
+
         if (path == null) {
             throw new ServletException("Parameter 'path' not set. ");
         }
@@ -56,25 +58,39 @@ public class FitsServlet extends HttpServlet {
             int slashIndex = fileName.lastIndexOf('/');
             fileName = fileName.substring(slashIndex + 1);
 
-            // System.out.println("FileName: " + fileName);
+            String dirPath = path.substring(0, path.indexOf(fileName));
+            byte[] dirPathBytes = dirPath.getBytes(Charset.forName("UTF-8"));
+            Checksum cs = new Adler32();
+            cs.update(dirPathBytes, 0, dirPathBytes.length);
+
+            // System.out.println("DirPath: " + dirPath + " FileName: " +
+            // fileName);
 
             InputStream is = url.openStream();
 
-            File f = new File("C:\\" + fileName);
-            is = new FileInputStream(f);
+            String tmpFileName =
+                System.getenv("TEMP") + System.getProperty("file.separator")
+                    + cs.getValue() + fileName;
+            File tmpFile = new File(tmpFileName);
+            // TODO check if delete on exit of VM is sufficient; may be better
+            // to delete on servlet destruction
+            tmpFile.deleteOnExit();
+            OutputStream out = new FileOutputStream(tmpFile);
 
-            OutputStream out =
-                new FileOutputStream(new File("C:\\new" + fileName));
-            byte buf[] = new byte[1024];
-            out.write(buf);
+            // download into local file
+            byte[] buffer = new byte[1024];
+            int bytesRead = is.read(buffer);
+            while (bytesRead >= 0) {
+                out.write(buffer, 0, bytesRead);
+                bytesRead = is.read(buffer);
+            }
             out.close();
             is.close();
 
+            path = tmpFileName;
         }
-        else if (path.startsWith("file")) {
-            String[] split = path.split("file:///");
-            path = split[1];
-
+        else if (path.startsWith("file:///")) {
+            path = path.replaceFirst("file:///", "");
         }
 
         this.testParameter(path);
@@ -105,8 +121,11 @@ public class FitsServlet extends HttpServlet {
     private void testParameter(String Pfad) throws ServletException,
         FileNotFoundException {
         f = new File(Pfad);
+        if (f == null) {
+            throw new FileNotFoundException("Cannot open file: " + Pfad);
+        }
         if (f.canRead() != true) {
-            w.println(new FileNotFoundException("File can not be found!"));
+            new FileNotFoundException("Cannot read file: " + Pfad);
         }
     }
 
