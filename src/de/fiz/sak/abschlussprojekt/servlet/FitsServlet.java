@@ -63,22 +63,19 @@ public class FitsServlet extends HttpServlet {
             Checksum cs = new Adler32();
             cs.update(dirPathBytes, 0, dirPathBytes.length);
 
-            // System.out.println("DirPath: " + dirPath + " FileName: " +
-            // fileName);
-
             InputStream is = url.openStream();
 
-            String tmpFileName =
-                System.getenv("TEMP") + System.getProperty("file.separator")
-                    + cs.getValue() + fileName;
-            File tmpFile = new File(tmpFileName);
+            // String tmpFileName = System.getenv("TEMP") + System.getProperty("file.separator") + cs.getValue() + fileName;
+            // File tmpFile = new File(tmpFileName);
+            File tmpFile =
+                File.createTempFile(String.valueOf(cs.getValue()), fileName);
             // TODO check if delete on exit of VM is sufficient; may be better
             // to delete on servlet destruction
             tmpFile.deleteOnExit();
             OutputStream out = new FileOutputStream(tmpFile);
 
-            // download into local file
-            byte[] buffer = new byte[1024];
+            // download
+            byte[] buffer = new byte[2048];
             int bytesRead = is.read(buffer);
             while (bytesRead >= 0) {
                 out.write(buffer, 0, bytesRead);
@@ -87,7 +84,7 @@ public class FitsServlet extends HttpServlet {
             out.close();
             is.close();
 
-            path = tmpFileName;
+            path = tmpFile.getAbsolutePath();//Name;
         }
         else if (path.startsWith("file:///")) {
             path = path.replaceFirst("file:///", "");
