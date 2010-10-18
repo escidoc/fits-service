@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="FitsServiceExample" default="deploy">
 
-	<property name="project.name" value="FitsService" />
+	<property file="build.properties" />
+	<property file="build.default.properties" />
+	
 	<property name="web.jar" value="${project.name}.war" />
 	<property name="src.pack" value="${project.name}-sources.jar" />
 
-	<property name="tomcat.home" value="C:\Programme\Apache Software Foundation\Tomcat 5.5" />
-
-	<property name="jboss.home" value="C:\workarea\jboss" />
-	<property name="jboss.config" value="default" />
+	<property name="deploy.dir" value="${jboss.home}\server\${jboss.config}\deploy" />
+	<!--
+	<property name="deploy.dir" value="${tomcat.home}\webapps" />
+	-->
 
 	<target name="war" description="${web.jar}">
 		<jar destfile="${web.jar}">
-			<zipfileset dir="bin" prefix="WEB-INF/classes" >
-				<include name="de/fiz/sak/abschlussprojekt/**"/>
+			<zipfileset dir="bin" prefix="WEB-INF/classes">
+				<include name="de/fiz/sak/abschlussprojekt/**" />
 			</zipfileset>
 			<zipfileset dir="web" />
 		</jar>
@@ -22,47 +24,41 @@
 	<target name="sources" description="${src.pack}">
 		<delete>
 			<fileset dir=".">
-				<include name="${src.pack}"/>
+				<include name="${src.pack}" />
 			</fileset>
 		</delete>
 		<jar destfile="${src.pack}">
 			<zipfileset dir=".">
-				<include name="src/**"/>
+				<include name="src/**" />
+				<include name="web/**" />
+				<include name="lib/**" />
+				<include name="build.xml" />
 				<!--
-				<include name="web/**"/>
 				<include name=".settings/**"/>
 				<include name=".classpath"/>
 				<include name=".project"/>
-				<include name="build.xml"/>
 				-->
 			</zipfileset>
-			<zipfileset dir="web" />
 		</jar>
 	</target>
-	
+
 	<target name="clean" depends="undeploy">
 		<delete>
 			<fileset dir=".">
-				<include name="${web.jar}"/>
-				<include name="${src.pack}"/>
+				<include name="${web.jar}" />
+				<include name="${src.pack}" />
 			</fileset>
 		</delete>
 	</target>
 
 	<target name="deploy" depends="war">
-		<!--
-		<copy file="${web.jar}" todir="${tomcat.home}\webapps" />
-		-->
-		<copy file="${web.jar}" todir="${jboss.home}\server\${jboss.config}\deploy" />
+		<copy file="${web.jar}" todir="${deploy.dir}" />
 	</target>
 
 	<target name="undeploy">
-		<!--
-		<delete file="${tomcat.home}\webapps\${web.jar}" />
-		-->
-		<delete file="${jboss.home}\server\${jboss.config}\deploy\${web.jar}" />
+		<delete file="${deploy.dir}\${web.jar}" />
 	</target>
 
-	<target name="redeploy" depends="undeploy, deploy"/>
+	<target name="redeploy" depends="undeploy, deploy" />
 
 </project>
