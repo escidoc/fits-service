@@ -6,14 +6,14 @@
 	<display-name>FitsService</display-name>
 	
 	<servlet>
-		<description>Fits Servlet</description>
-		<display-name>FitsService</display-name>
-		<servlet-name>fits.FitsService</servlet-name>
-		<servlet-class>de.fiz.sak.abschlussprojekt.servlet.FitsServlet</servlet-class>
+		<description>Technical Metadata Extractor Servlet</description>
+		<display-name>TME Service</display-name>
+		<servlet-name>TMES</servlet-name>
+		<servlet-class>org.escidoc.tme.TechnicalMetadataExtractorServlet</servlet-class>
 	</servlet>
 	
 	<servlet-mapping>
-		<servlet-name>fits.FitsService</servlet-name>
+		<servlet-name>TMES</servlet-name>
 		<url-pattern>/examine/*</url-pattern>
 	</servlet-mapping>
 	
