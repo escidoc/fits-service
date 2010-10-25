@@ -65,7 +65,8 @@ public class FitsServlet extends HttpServlet {
 
             InputStream is = url.openStream();
 
-            // String tmpFileName = System.getenv("TEMP") + System.getProperty("file.separator") + cs.getValue() + fileName;
+            // String tmpFileName = System.getenv("TEMP") +
+            // System.getProperty("file.separator") + cs.getValue() + fileName;
             // File tmpFile = new File(tmpFileName);
             File tmpFile =
                 File.createTempFile(String.valueOf(cs.getValue()), fileName);
@@ -84,7 +85,7 @@ public class FitsServlet extends HttpServlet {
             out.close();
             is.close();
 
-            path = tmpFile.getAbsolutePath();//Name;
+            path = tmpFile.getAbsolutePath();// Name;
         }
         else if (path.startsWith("file:///")) {
             path = path.replaceFirst("file:///", "");
@@ -122,7 +123,7 @@ public class FitsServlet extends HttpServlet {
             throw new FileNotFoundException("Cannot open file: " + Pfad);
         }
         if (f.canRead() != true) {
-            new FileNotFoundException("Cannot read file: " + Pfad);
+            throw new FileNotFoundException("Cannot read file: " + Pfad);
         }
     }
 
