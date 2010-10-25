@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Iterator;
 
 import org.jdom.Document;
+import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 import de.fiz.sak.abschlussprojekt.sessions.FitsInterface;
@@ -14,13 +15,29 @@ import edu.harvard.hul.ois.fits.exceptions.FitsToolException;
 
 public class FitsInterfaceImpl implements FitsInterface {
 
+    private final boolean omitXmlDeclaration;
+
+    /**
+     * Result from extracting metadata does not contain XML header. If XML
+     * header needed use FitsInterfaceImpl(boolean omitXmlDeclaration = false).
+     */
+    public FitsInterfaceImpl() {
+        super();
+        this.omitXmlDeclaration = true;
+    }
+
+    public FitsInterfaceImpl(boolean omitXmlDeclaration) {
+        super();
+        this.omitXmlDeclaration = omitXmlDeclaration;
+    }
+
     @Override
     public String extractMetadata(File f) throws FitsException {
         String x = null;
 
         Fits fits = null;
         fits = new Fits();
-        System.out.println("FITS_HOME=" + Fits.FITS_HOME);
+        // System.out.println("FITS_HOME=" + Fits.FITS_HOME);
 
         FitsOutput fitsOut;
         fitsOut = fits.examine(f);
@@ -42,7 +59,9 @@ public class FitsInterfaceImpl implements FitsInterface {
 
         Document doc = fitsOut.getFitsXml();
 
-        XMLOutputter outputter = new XMLOutputter();
+        Format format = Format.getPrettyFormat();
+        format.setOmitDeclaration(this.omitXmlDeclaration);
+        XMLOutputter outputter = new XMLOutputter(format);
         x = outputter.outputString(doc);
 
         return x;
