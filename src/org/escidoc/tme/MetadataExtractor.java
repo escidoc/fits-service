@@ -1,11 +1,12 @@
 package org.escidoc.tme;
 
-import java.io.File;
+import java.io.IOException;
 
 import edu.harvard.hul.ois.fits.exceptions.FitsException;
 
 public interface MetadataExtractor {
-	
-	public String extractMetadata(File f) throws FitsException;
+
+	public String extractMetadata(String locator) throws FitsException,
+			IOException;
 
 }
