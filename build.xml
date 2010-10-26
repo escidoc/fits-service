@@ -15,7 +15,7 @@
 	<target name="war" description="${web.jar}">
 		<jar destfile="${web.jar}">
 			<zipfileset dir="bin" prefix="WEB-INF/classes">
-				<include name="de/fiz/sak/abschlussprojekt/**" />
+				<include name="org/escidoc/tme/**" />
 			</zipfileset>
 			<zipfileset dir="web" />
 		</jar>
@@ -32,6 +32,7 @@
 				<include name="src/**" />
 				<include name="web/**" />
 				<include name="lib/**" />
+				<include name="build.default.properties" />
 				<include name="build.xml" />
 				<!--
 				<include name=".settings/**"/>
