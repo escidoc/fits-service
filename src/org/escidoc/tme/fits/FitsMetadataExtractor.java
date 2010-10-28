@@ -16,7 +16,9 @@ import java.util.zip.Checksum;
 import javax.servlet.ServletException;
 
 import org.escidoc.tme.MetadataExtractor;
+import org.jdom.Content;
 import org.jdom.Document;
+import org.jdom.ProcessingInstruction;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
@@ -32,6 +34,8 @@ public class FitsMetadataExtractor implements MetadataExtractor {
 
 	private final boolean omitXmlDeclaration;
 
+	private String xsltUrl;
+
 	/**
 	 * Result from extracting metadata does not contain XML header. If XML
 	 * header needed use FitsInterfaceImpl(boolean omitXmlDeclaration = false).
@@ -39,11 +43,25 @@ public class FitsMetadataExtractor implements MetadataExtractor {
 	public FitsMetadataExtractor() {
 		super();
 		this.omitXmlDeclaration = true;
+		this.xsltUrl = null;
 	}
 
 	public FitsMetadataExtractor(boolean omitXmlDeclaration) {
 		super();
 		this.omitXmlDeclaration = omitXmlDeclaration;
+		this.xsltUrl = null;
+	}
+
+	public FitsMetadataExtractor(String xsltUrl) {
+		super();
+		this.omitXmlDeclaration = true;
+		this.xsltUrl = xsltUrl;
+	}
+
+	public FitsMetadataExtractor(boolean omitXmlDeclaration, String xsltUrl) {
+		super();
+		this.omitXmlDeclaration = omitXmlDeclaration;
+		this.xsltUrl = xsltUrl;
 	}
 
 	@Override
@@ -102,7 +120,7 @@ public class FitsMetadataExtractor implements MetadataExtractor {
 
 		// .. File
 
-		String x = null;
+		String fitsXml = null;
 
 		Fits fits = null;
 		fits = new Fits();
@@ -127,13 +145,19 @@ public class FitsMetadataExtractor implements MetadataExtractor {
 
 		Document doc = fitsOut.getFitsXml();
 
+		if (this.xsltUrl != null) {
+			Content pi = new ProcessingInstruction("xml-stylesheet",
+					"type=\"text/xsl\" href=\"" + this.xsltUrl + "\"");
+			doc.addContent(0, pi);
+		}
+
 		Format format = Format.getPrettyFormat();
 		format.setOmitDeclaration(this.omitXmlDeclaration);
 		XMLOutputter outputter = new XMLOutputter(format);
-		x = outputter.outputString(doc);
+		fitsXml = outputter.outputString(doc);
 
-		return x;
-
+		return fitsXml;
+		
 	}
 
 	/**
