@@ -36,9 +36,8 @@ public class TechnicalMetadataExtractorServlet extends HttpServlet {
             throw new ServletException("Parameter 'path' not set. ");
         }
 
-        
-
         String xml = null;
+        resp.setContentType("text/xml");
 
         try {
             xml = fi.extractMetadata(path);
