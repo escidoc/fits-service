@@ -8,17 +8,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.escidoc.tme.exceptions.MetadataExtractorException;
 import org.escidoc.tme.fits.FitsMetadataExtractor;
-
-import edu.harvard.hul.ois.fits.exceptions.FitsException;
 
 public class TechnicalMetadataExtractorServlet extends HttpServlet {
 
     private static final long serialVersionUID = -2124267350610278867L;
 
-    private MetadataExtractor fi = new FitsMetadataExtractor();
-
-    private PrintWriter w;
     /**
      * Implements the HTTP get-request
      * 
@@ -31,24 +27,29 @@ public class TechnicalMetadataExtractorServlet extends HttpServlet {
         throws ServletException, IOException {
 
         String path = req.getParameter("path");
-
-        if (path == null) {
-            throw new ServletException("Parameter 'path' not set. ");
+        if (path == null || path.trim().length() == 0) {
+            String msg =
+                "Parameter 'path' is required. Try .../examine?path=[local-path|remote-path]";
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, msg);
         }
+        else {
 
-        String xml = null;
-        resp.setContentType("text/xml");
+            String xml = null;
+            resp.setContentType("text/xml");
 
-        try {
-            xml = fi.extractMetadata(path);
-        }
-        catch (FitsException e) {
-            throw new ServletException(e);
-        }
+            try {
+                // TODO factory?
+                MetadataExtractor me = new FitsMetadataExtractor();
+                xml = me.extractMetadata(path);
+            }
+            catch (MetadataExtractorException e) {
+                throw new ServletException(e);
+            }
 
-        if (xml != null) {
-            w = resp.getWriter();
-            w.println(xml);
+            if (xml != null) {
+                PrintWriter w = resp.getWriter();
+                w.println(xml);
+            }
         }
     }
 
