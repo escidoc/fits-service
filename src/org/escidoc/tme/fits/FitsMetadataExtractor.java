@@ -128,8 +128,8 @@ public class FitsMetadataExtractor implements MetadataExtractor {
         else if (locator.startsWith("file:")) {
             URL fileUrl = new URL(locator);
             String path = fileUrl.getPath();
-            String file = fileUrl.getFile();
-            System.out.println("path[" + path + "] file[" + file + "]");
+            // String file = fileUrl.getFile();
+            // System.out.println("path[" + path + "] file[" + file + "]");
             theFile = new File(path);
         }
         else {
