@@ -7,11 +7,6 @@
 	<property name="web.jar" value="${project.name}.war" />
 	<property name="src.pack" value="${project.name}-sources.jar" />
 
-	<property name="deploy.dir" value="${tomcat.home}\webapps" />
-	<!--
-	<property name="deploy.dir" value="${jboss.home}\server\${jboss.config}\deploy" />
-	-->
-
 	<target name="war" description="${web.jar}">
 		<jar destfile="${web.jar}">
 			<zipfileset dir="bin" prefix="WEB-INF/classes">
